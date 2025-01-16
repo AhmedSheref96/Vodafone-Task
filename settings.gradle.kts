@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Vodafone-Task"
 include(":app")
- 
+include(":data")
+include(":domain")
