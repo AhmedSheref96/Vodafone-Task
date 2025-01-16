@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vodafone-Task</string>
+    <string name="city_name">أدخل اسم المدينه</string>
+    <string name="city_country">المدينة، الدولة</string>
+    <string name="weather_description">الطقس: %s - %s</string>
+    <string name="temperature">درجة الحرارة: %s°C (يشعر وكأنها: %s°C)</string>
+    <string name="min_max_temperature">الحد الأدنى: %s°C، الحد الأقصى: %s°C</string>
+    <string name="wind">الرياح: %s م/ث (%s)</string>
+    <string name="humidity_pressure">الرطوبة: %s%%، الضغط الجوي: %s hPa</string>
+    <string name="cloudiness">الغيوم: %s%%</string>
+    <string name="visibility">الرؤية: %s كم</string>
+    <string name="sunrise_sunset">شروق الشمس: %s\nغروب الشمس: %s</string>
+    <string name="weather_icon_desc">رمز الطقس</string>
+    <string name="weather_forecast">توقعات الطقس</string>
+    <string name="loading">جارى التحميل</string>
+    <string name="submmit">حفظ</string>
+</resources>

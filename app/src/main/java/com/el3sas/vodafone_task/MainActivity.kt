@@ -7,12 +7,27 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.el3sas.domain.models.CurrentWeatherResponse
+import com.el3sas.vodafone_task.Destinations.CurrentWeather
+import com.el3sas.vodafone_task.Destinations.InputCity
+import com.el3sas.vodafone_task.Destinations.WeatherForecast
+import com.el3sas.vodafone_task.screens.cityInput.CityInputRoute
+import com.el3sas.vodafone_task.screens.currentWeather.CurrentWeatherScreen
+import com.el3sas.vodafone_task.screens.weatherForecastScreen.WeatherForecastRoute
 import com.el3sas.vodafone_task.ui.theme.VodafoneTaskTheme
+import com.el3sas.vodafone_task.utils.navType
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.serializer
+import kotlin.reflect.typeOf
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,10 +35,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             VodafoneTaskTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    val navHostController = rememberNavController()
+                    NavHost(modifier = Modifier.padding(innerPadding), navHostController)
                 }
             }
         }
@@ -31,17 +44,41 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun NavHost(modifier: Modifier, navHostController: NavHostController) {
+    NavHost(navHostController, startDestination = InputCity) {
+        composable<InputCity>(
+            mapOf(
+                typeOf<CurrentWeatherResponse>() to navType<CurrentWeatherResponse>(serializer = CurrentWeatherResponse.serializer()),
+            ),
+        ) {
+            CityInputRoute(modifier = modifier) {
+                navHostController.navigate(CurrentWeather(weatherData = it))
+            }
+        }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    VodafoneTaskTheme {
-        Greeting("Android")
+        composable<CurrentWeather>(
+            mapOf(
+                typeOf<CurrentWeatherResponse>() to navType<CurrentWeatherResponse>(serializer = CurrentWeatherResponse.serializer()),
+            ),
+        ) {
+            val weatherData = it.toRoute<CurrentWeather>()
+            CurrentWeatherScreen(
+                modifier = modifier,
+                currentWeather = weatherData.weatherData
+            ) { lat, lon ->
+                navHostController.navigate(
+                    WeatherForecast(
+                        city = weatherData.weatherData.name ?: "", lat = lat, lon = lon
+                    )
+                )
+            }
+        }
+
+        composable<WeatherForecast> {
+            val lat = it.arguments?.getDouble("lat")
+            val lon = it.arguments?.getDouble("lon")
+            WeatherForecastRoute(modifier = modifier, lon = lon ?: 0.0, lat = lat ?: 0.0)
+        }
+
     }
 }
