@@ -5,8 +5,10 @@ import com.el3sas.domain.models.WeatherFor7DaysResponse
 
 interface WeatherRepo {
 
-    suspend fun getCurrentWeather(lat: Double, lon: Double): CurrentWeatherResponse
+    suspend fun getCurrentWeather(cityName:String): Result<CurrentWeatherResponse>
 
-    suspend fun getWeatherFor7Days(lat: Double, lon: Double): WeatherFor7DaysResponse
+    suspend fun getWeatherFor7Days(lat: Double, lon: Double): Result<WeatherFor7DaysResponse>
+
+    suspend fun saveLastSearchedCityName(cityName: String): Result<Unit>
 
 }

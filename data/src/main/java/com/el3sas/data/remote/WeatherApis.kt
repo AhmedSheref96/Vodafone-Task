@@ -1,6 +1,7 @@
 package com.el3sas.data.remote
 
 import com.el3sas.domain.models.CurrentWeatherResponse
+import com.el3sas.domain.models.WeatherFor7DaysResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -20,6 +21,6 @@ interface WeatherApis {
         @Query("exclude") exclude: String = "minutely,hourly,alerts",
         @Query("units") units: String = "metric",
         @Query("appid") apiKey: String = Constants.apiKey
-    ): CurrentWeatherResponse
+    ): WeatherFor7DaysResponse
 
 }
