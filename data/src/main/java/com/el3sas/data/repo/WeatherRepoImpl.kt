@@ -22,8 +22,8 @@ class WeatherRepoImpl @Inject constructor(
             runCatching { api.getWeatherFor7Days(lat, lon) }
         }
 
-    override suspend fun saveLastSearchedCityName(cityName: String) = withContext(Dispatchers.IO) {
-        runCatching { sharedPref.saveLastSearchedCityName(cityName) }
+    override fun saveLastSearchedCityName(cityName: String) {
+        sharedPref.saveLastSearchedCityName(cityName)
     }
 
     override fun getLastSelectedCityName(): String? = sharedPref.getLastSearchedCityName()

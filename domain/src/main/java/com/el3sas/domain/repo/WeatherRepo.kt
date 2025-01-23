@@ -9,7 +9,7 @@ interface WeatherRepo {
 
     suspend fun getWeatherForecast(lat: Double, lon: Double): Result<WeatherForecastResponse>
 
-    suspend fun saveLastSearchedCityName(cityName: String): Result<Unit>
+    fun saveLastSearchedCityName(cityName: String)
 
     fun getLastSelectedCityName():String?
 

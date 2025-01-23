@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.el3sas.domain.models.CurrentWeatherResponse
 import com.el3sas.vodafone_task.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun CityInputRoute(
@@ -38,17 +37,21 @@ fun CityInputRoute(
     onCitySelected: (CurrentWeatherResponse) -> Unit
 ) {
     val viewModel: CityInputViewModel = hiltViewModel()
-    val lastSelectedCityName = viewModel.lastSelectedCityName
+    val lastSelectedCityName by viewModel.lastSelectedCityName.collectAsStateWithLifecycle()
     val currentWeather by viewModel.currentWeather.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
 
-    if (currentWeather != null) onCitySelected.invoke(currentWeather!!)
+    val coroutineContext = rememberCoroutineScope()
 
     CityInputScreen(
         currentWeather = currentWeather, error = error,
         lastSelectedCityName = lastSelectedCityName,
         onCitySelected = {
-            viewModel.getCurrentWeather(it)
+            coroutineContext.launch {
+                viewModel.getCurrentWeather(it).await().let { result ->
+                    if (result!=null) onCitySelected.invoke(result)
+                }
+            }
         },
     )
 }

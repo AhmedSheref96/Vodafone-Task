@@ -6,11 +6,8 @@ import javax.inject.Inject
 
 class GetCurrentWeather @Inject constructor(private val repo: WeatherRepo) {
     suspend operator fun invoke(
-        cityName: String, onCatchException: (Throwable) -> Unit
-    ): CurrentWeatherResponse? {
+        cityName: String
+    ): Result<CurrentWeatherResponse> =
         repo.getCurrentWeather(cityName = cityName)
-            .getOrElse { exception -> onCatchException(exception) }.let { any ->
-                return any as? CurrentWeatherResponse
-            }
-    }
+
 }

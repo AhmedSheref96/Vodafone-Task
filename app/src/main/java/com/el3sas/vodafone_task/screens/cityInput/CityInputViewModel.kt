@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.el3sas.domain.models.CurrentWeatherResponse
 import com.el3sas.domain.usecaes.GetCurrentWeather
 import com.el3sas.domain.usecaes.GetLastSelectedCityName
+import com.el3sas.domain.usecaes.SaveLastSearchedCityName
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,11 +17,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CityInputViewModel @Inject constructor(
-    private val getCurrentWeather: GetCurrentWeather,
-    private val getLastSelectedCityName: GetLastSelectedCityName
+    private val gettingCurrentWeather: GetCurrentWeather,
+    private val getLastSelectedCityName: GetLastSelectedCityName,
+    private val saveLastSearchedCityName: SaveLastSearchedCityName
 ) : ViewModel() {
 
-    val lastSelectedCityName = getLastSelectedCityName()
+    private val _lastSelectedCityName = MutableStateFlow<String>("")
+    val lastSelectedCityName = _lastSelectedCityName.asStateFlow()
 
     private val _currentWeather = MutableStateFlow<CurrentWeatherResponse?>(null)
     val currentWeather = _currentWeather.asStateFlow()
@@ -27,12 +31,19 @@ class CityInputViewModel @Inject constructor(
     private val _error = MutableStateFlow<Throwable?>(null)
     val error = _error.asStateFlow()
 
-    fun getCurrentWeather(cityName: String) = viewModelScope.launch {
-        getCurrentWeather(cityName = cityName, onCatchException = { throwable ->
-            _error.tryEmit(throwable)
-        })?.let { currentWeather ->
-            _currentWeather.tryEmit(currentWeather)
+    init {
+        viewModelScope.launch {
+            _lastSelectedCityName.tryEmit(getLastSelectedCityName() ?: "")
         }
+    }
+
+    fun getCurrentWeather(cityName: String) = viewModelScope.async {
+        gettingCurrentWeather(cityName = cityName).onSuccess {
+            _currentWeather.tryEmit(it)
+            saveLastSearchedCityName(cityName)
+        }.onFailure {
+            _error.tryEmit(it)
+        }.getOrNull()
     }
 
     fun clearCurrentData() = viewModelScope.launch {
