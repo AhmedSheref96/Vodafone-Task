@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.el3sas.vodafone_task"
+    namespace = "com.el3sas.weatherApp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.el3sas.vodafone_task"
+        applicationId = "com.el3sas.weatherApp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

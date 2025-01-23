@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.el3sas.domain"
+    namespace = "com.el3sas.weatherApp.domain"
     compileSdk = 35
 
     defaultConfig {
